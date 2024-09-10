@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuaDecryptor", "LuaDecryptor.csproj", "{AA0E5A58-F11E-4C8A-9EAA-D743ED0A94FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA0E5A58-F11E-4C8A-9EAA-D743ED0A94FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA0E5A58-F11E-4C8A-9EAA-D743ED0A94FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA0E5A58-F11E-4C8A-9EAA-D743ED0A94FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA0E5A58-F11E-4C8A-9EAA-D743ED0A94FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FBCDDD64-C088-44F0-A9E0-127FD16668BE}
+	EndGlobalSection
+EndGlobal
