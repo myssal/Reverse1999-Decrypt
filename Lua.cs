@@ -10,19 +10,20 @@ using System.Threading.Tasks;
 namespace LuaDecryptor
 {
     public class Lua
-    {
-        public string luabytes {  get; set; }
-        public string luaCompiled { get; set; }
+    {        
+        public string luabytes {  get; set; } //orginal lua bundles location
+        public int dumpCount {  get; set; }
+        public string luaCompiled { get; set; } //decrypted compiled lua
         
         public Lua(string luabytes) 
         {
             this.luabytes = luabytes;
             luaCompiled = "Compiled_Lua";
+            dumpCount = 0;
         }
         public void DecryptLuabytes()
         {
             var files = Directory.GetFiles(luabytes, "*.dat", SearchOption.AllDirectories);
-            Console.WriteLine($"Find {files.Length} files.");
             foreach (var file in files)
             {
                 var filename = Path.GetFileNameWithoutExtension(file);
@@ -49,21 +50,39 @@ namespace LuaDecryptor
 
                     Directory.CreateDirectory(Path.Combine(luaCompiled, filename));
                     File.WriteAllBytes(Path.Combine(luaCompiled, filename, str), data);
+                    dumpCount++;
                 }
             }
+            Console.WriteLine($"Decrypt {dumpCount} lua files.");
         }
 
         public void DecompileLua()
         {
-            if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LuaData")))
-                Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LuaData"));
-            ProcessStartInfo info = new ProcessStartInfo("luajit-decompiler-v2.exe");
-            info.Arguments = $"{luaCompiled} -s -o \"LuaData\"";
-            info.UseShellExecute = false;
-            var process = new Process();
-            process.StartInfo = info;
-            process.Start();
-            process.WaitForExit();
+            if (dumpCount == 0)
+            {
+                Console.WriteLine("No decrypted lua found.");
+            }
+            else
+            {
+                if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LuaData")))
+                    Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LuaData"));
+                ProcessStartInfo info = new ProcessStartInfo("luajit-decompiler-v2.exe");
+                info.Arguments = $"{luaCompiled} -s -o \"LuaData\"";
+                info.UseShellExecute = false;
+                var process = new Process();
+                process.StartInfo = info;
+                process.Start();
+                process.WaitForExit();
+            }            
+        }
+
+        public void restoreLuaName()
+        {
+            var files = Directory.GetFiles("LuaData", "*.lua*", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+
+            }
         }
     }
 }

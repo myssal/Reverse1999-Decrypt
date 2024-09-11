@@ -10,6 +10,7 @@ namespace LuaDecryptor
         {
             Lua lua = new Lua(args[0]);
             lua.DecryptLuabytes();
+            lua.DecompileLua();
         }
 
         
