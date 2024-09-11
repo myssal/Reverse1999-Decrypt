@@ -8,9 +8,14 @@ namespace LuaDecryptor
     {
         static void Main(string[] args)
         {
-            Lua lua = new Lua(args[0]);
-            lua.DecryptLuabytes();
-            lua.DecompileLua();
+            Lua lua = new Lua("");
+            //lua.DecryptLuabytes();
+            //lua.DecompileLua();
+            //lua.restoreLuaName();
+            //lua.checkHardCodeLuaName();
+            //lua.checkHash();
+            Console.WriteLine("Done decrypting and restore lua file names");
+            Console.ReadLine();
         }
 
         
