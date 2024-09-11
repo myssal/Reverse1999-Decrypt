@@ -17,6 +17,8 @@ namespace LuaDecryptor
     {        
         public string luabytes {  get; set; }
         public int dumpCount {  get; set; }
+        public int totalFile {  get; set; }
+        public int successRestore {  get; set; }
         public string luaCompiled { get; set; }
         public string luaRestored { get; set; }
         
@@ -26,9 +28,12 @@ namespace LuaDecryptor
             luaCompiled = "Compiled_Lua";
             luaRestored = "LuaData";
             dumpCount = 0;
+            successRestore = 0;
+            totalFile = 0;
         }
         public void DecryptLuabytes()
         {
+            //by @yarik
             var files = Directory.GetFiles(luabytes, "*.dat", SearchOption.AllDirectories);
             foreach (var file in files)
             {
@@ -82,24 +87,24 @@ namespace LuaDecryptor
             }            
         }
 
-        public void restoreLuaName()
+        public void RestoreLuaName()
         {
             var files = Directory.GetFiles(luaRestored, "*.lua*", SearchOption.AllDirectories);
+            totalFile = files.Count();
             foreach (var file in files)
-            {
-                Console.WriteLine(file);
-                string moduleCheck = File.ReadLines(file).FirstOrDefault();
-                if (moduleCheck != null)
+            {  
+                bool moduleHeader = false;
+                var content = File.ReadAllLines(file);
+                foreach (var line in content)
                 {
-                    if (moduleCheck.StartsWith("module(\""))
+                    if (line.StartsWith("module(\""))
                     {
                         Console.WriteLine("Find modulde header, restore original path and name...");
 
-                        //check for module header at start of file, if not have try restore using hardcoded func name
-                        int firstIndex = moduleCheck.IndexOf('"') + 1;
-                        int secondIndex = moduleCheck.IndexOf('"', moduleCheck.IndexOf('"') + 1) - 1;
-                        string subDirFullPath = moduleCheck.Substring(firstIndex, secondIndex - firstIndex + 1);
-                        Console.WriteLine(subDirFullPath);
+                        //check for module header at start of file, if not have try restore using func name text file
+                        int firstIndex = line.IndexOf('"') + 1;
+                        int secondIndex = line.IndexOf('"', line.IndexOf('"') + 1) - 1;
+                        string subDirFullPath = line.Substring(firstIndex, secondIndex - firstIndex + 1);
                         string[] subDir = subDirFullPath.Split('.');
                         string fileName = $"{subDir[subDir.Length - 1]}.lua";
                         subDir = subDir.Take(subDir.Count() - 1).ToArray();
@@ -110,63 +115,40 @@ namespace LuaDecryptor
                             Directory.CreateDirectory(Path.Combine(luaRestored, subDirCombine));
                             Console.WriteLine($"Move {Path.GetFileName(file)} -> {Path.Combine(luaRestored, subDirCombine, fileName)}");
                             File.Move(file, Path.Combine(luaRestored, subDirCombine, fileName), true);
+                            successRestore++;
                         }
                         catch (Exception e)
                         {
                             Console.WriteLine(e);
                         }
-
+                        moduleHeader = true;
+                        break;
                     }
-                    else
-                    {
-                        //try recovering using luaname.txt
-                        //idea from @yarik
-                        var names = new Dictionary<string, string>();
-                        foreach (var name in File.ReadAllLines(@"luaName.txt"))
-                        {
-                            names.Add(Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(name))).ToLower(), name);
-                        }
-                        if (names.TryGetValue(Path.GetFileName(file), out var path))
-                        {
-                            try
-                            {
-                                Console.WriteLine($"Move {Path.GetFileName(file)} -> {Path.Combine(luaRestored, Path.GetDirectoryName(path))}");
-                                Directory.CreateDirectory(Path.Combine(luaRestored, Path.GetDirectoryName(path)));
-                                File.Move(file, Path.Combine(luaRestored, path), true);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e);
-                            }
-                        }
-
-                    }
-
                 }
-            }
-        }
-
-        public void checkHardCodeLuaName()
-        {
-            string luaDump = @"DumpHC";
-            var files = Directory.GetFiles(luaDump, "*.lua*", SearchOption.AllDirectories);
-            using (StreamWriter sw = new StreamWriter("luaName.txt"))
-            {
-                foreach (var f in files)
+                if (!moduleHeader)
                 {
-                    string moduleCheck = File.ReadLines(f).FirstOrDefault();
-                    if (moduleCheck != null && !moduleCheck.StartsWith("module(\""))
+                    //try recovering using luaname.txt
+                    var names = new Dictionary<string, string>();
+                    foreach (var name in File.ReadAllLines(@"luaName.txt"))
                     {
-                        sw.WriteLine(f.Replace($"{luaDump}\\", string.Empty));
+                        names.Add(Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(name))).ToLower(), name);
+                    }
+                    if (names.TryGetValue(Path.GetFileName(file), out var path))
+                    {
+                        try
+                        {
+                            Console.WriteLine($"Move {Path.GetFileName(file)} -> {Path.Combine(luaRestored, Path.GetDirectoryName(path))}");
+                            Directory.CreateDirectory(Path.Combine(luaRestored, Path.GetDirectoryName(path)));
+                            File.Move(file, Path.Combine(luaRestored, path), true);
+                            successRestore++;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
                     }
                 }
             }
-        }
-
-        public void checkHash()
-        {
-            
-
         }
     }
 }
