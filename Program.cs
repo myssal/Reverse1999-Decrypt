@@ -22,7 +22,7 @@ namespace LuaDecryptor
                 lua.DecompileLua();
                 lua.RestoreLuaName();
             }
-            if (args.Contains("-l")) lua.DecryptLuabytes();
+            if (args.Contains("-l")) lua.DecryptLuabytes(); 
             if (args.Contains("-d")) lua.DecompileLua();
             if (args.Contains("-r")) lua.RestoreLuaName();
             Console.WriteLine($"Done decrypting {lua.totalFile} lua files, with {lua.successRestore} lua files succeeded in restoring original name.");
