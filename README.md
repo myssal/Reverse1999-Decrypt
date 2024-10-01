@@ -1,2 +1,2 @@
-# LuaDecryptor
-Decrypt and restore most of lua original file names.
+# Reverse 1999 Decryptor
+WIP decryptor for lua, datacfg and json of Reverse 1999.
