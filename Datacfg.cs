@@ -11,10 +11,15 @@ namespace LuaDecryptor
     {
         public static void DecryptDatacfg()
         {
+            // delete first 48 bytes then aes
             string datacfgPath = "Datacfg";
             List<string> datacfgList = Directory.GetFiles(datacfgPath, "*.dat*", SearchOption.AllDirectories).ToList();
             foreach (string datacfg in datacfgList)
             {
+                Console.WriteLine($"Decrypting {Path.GetFileName(datacfg)}...");
+                List<Byte> content = File.ReadAllBytes(datacfg).ToList();
+                content.RemoveRange(0, 48);
+                File.WriteAllBytes(datacfg, content.ToArray());
                 AESDecrypt(datacfg);
             }
         }
@@ -36,8 +41,8 @@ namespace LuaDecryptor
                     {
                         using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                         {
-                            Console.WriteLine($"Decrypting {Path.GetFileName(datacfg)}...");
-                            File.WriteAllText(datacfg, srDecrypt.ReadToEnd());
+                            Console.WriteLine($"Wrting to {datacfg.Replace(".dat", ".json")}");
+                            File.WriteAllText(datacfg.Replace(".dat", ".json"), srDecrypt.ReadToEnd());
                         }
                     }
                 }
