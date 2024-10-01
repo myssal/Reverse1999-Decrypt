@@ -8,8 +8,13 @@ namespace LuaDecryptor
     {
         static void Main(string[] args)
         {
-            
-            if (args.Length == 0) 
+            Datacfg.DecryptDatacfg();
+           
+        }
+
+        public static void LuaDecrypt(string[] args)
+        {
+            if (args.Length == 0)
                 Console.WriteLine("Usage: LuaDecryptor.exe <Luabytes folder> [options]" +
                                   "default: decrypt luabytes, decompile lua and restore file name" +
                                   "-l: decrypte luabytes bundle" +
@@ -22,13 +27,11 @@ namespace LuaDecryptor
                 lua.DecompileLua();
                 lua.RestoreLuaName();
             }
-            if (args.Contains("-l")) lua.DecryptLuabytes(); 
+            if (args.Contains("-l")) lua.DecryptLuabytes();
             if (args.Contains("-d")) lua.DecompileLua();
             if (args.Contains("-r")) lua.RestoreLuaName();
             Console.WriteLine($"Done decrypting {lua.totalFile} lua files, with {lua.successRestore} lua files succeeded in restoring original name.");
             Console.ReadLine();
         }
-
-        
     }
 }
