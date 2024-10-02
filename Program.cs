@@ -8,7 +8,6 @@ namespace LuaDecryptor
     {
         static void Main(string[] args)
         {
-            
         }
 
         public static void LuaDecrypt(string[] args)

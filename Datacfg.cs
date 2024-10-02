@@ -4,6 +4,7 @@ using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using Crypto = System.Security.Cryptography;
 
 namespace LuaDecryptor
@@ -50,6 +51,35 @@ namespace LuaDecryptor
                 }
             }            
         }
+
+        public void DatacfgBeautifier()
+        {
+            List<string> jsonDump = Directory.GetFiles(datacfgPath, "*.json*").ToList();
+            foreach (string json in jsonDump)
+            {
+                Console.WriteLine($"Formating {Path.GetFileName(json)}...");
+                string data = File.ReadAllText(json);
+                //recover escape character
+                data = data.Replace("\\r\\n", "\r\n");
+                //remove escape for " letter
+                data = data.Replace("\\\"", "\"");                
+                File.WriteAllText(json, data, Encoding.UTF8);
+                DecodeUni(json);
+            }
+        }
+
+        public void DecodeUni(string path)
+        {
+            string content = File.ReadAllText(path);
+            Regex unicodeEscapePattern = new Regex(@"\\u([0-9A-Fa-f]{4})", RegexOptions.Compiled);
+            string decodedContent = unicodeEscapePattern.Replace(content, match =>
+            {
+                int unicodeValue = int.Parse(match.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
+                return ((char)unicodeValue).ToString();
+            });
+            File.WriteAllText(path, decodedContent);
+        }
+
 
     }
 
