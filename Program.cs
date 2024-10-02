@@ -8,8 +8,7 @@ namespace LuaDecryptor
     {
         static void Main(string[] args)
         {
-            Datacfg.DecryptDatacfg();
-           
+            
         }
 
         public static void LuaDecrypt(string[] args)

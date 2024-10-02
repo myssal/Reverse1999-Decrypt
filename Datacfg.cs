@@ -3,28 +3,30 @@ using System.IO;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using Crypto = System.Security.Cryptography;
 
 namespace LuaDecryptor
 {
     public class Datacfg
     {
-        public static void DecryptDatacfg()
+        public string datacfgPath { get; set; } = "Datacfg";
+        public void DecryptDatacfg()
         {
-            // delete first 48 bytes then aes
-            string datacfgPath = "Datacfg";
+            // delete first 48 bytes then aes            
             List<string> datacfgList = Directory.GetFiles(datacfgPath, "*.dat*", SearchOption.AllDirectories).ToList();
             foreach (string datacfg in datacfgList)
             {
+                string outputFile = datacfg.Replace(".dat", ".json");
                 Console.WriteLine($"Decrypting {Path.GetFileName(datacfg)}...");
                 List<Byte> content = File.ReadAllBytes(datacfg).ToList();
                 content.RemoveRange(0, 48);
-                File.WriteAllBytes(datacfg, content.ToArray());
-                AESDecrypt(datacfg);
+                File.WriteAllBytes(outputFile, content.ToArray());
+                AESDecrypt(outputFile);
             }
         }
 
-        public static void AESDecrypt(string datacfg)
+        public void AESDecrypt(string datacfg)
         {
             byte[] keyBytes = Encoding.UTF8.GetBytes("@_#*&Reverse2806                ");
             byte[] ivBytes = Encoding.UTF8.GetBytes("!_#@2022_Skyfly)");
@@ -41,8 +43,8 @@ namespace LuaDecryptor
                     {
                         using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                         {
-                            Console.WriteLine($"Wrting to {datacfg.Replace(".dat", ".json")}");
-                            File.WriteAllText(datacfg.Replace(".dat", ".json"), srDecrypt.ReadToEnd());
+                            Console.WriteLine($"Wrting to {datacfg}");
+                            File.WriteAllText(datacfg, srDecrypt.ReadToEnd());
                         }
                     }
                 }
